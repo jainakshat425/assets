@@ -1,0 +1,56 @@
+<!--
+* @author Akshat Jain
+* @email akshat.jain@mtxb2b.com
+* @desc Quick Action Modal
+-->
+<aura:component>
+    <aura:attribute name="header" type="Aura.Component[]"/>
+    <aura:attribute name="body" type="Aura.Component[]"/>
+    <aura:attribute name="footer" type="Aura.Component[]"/>
+    <aura:attribute name="maxHeight" type="String" default="400px"/>
+    <aura:attribute name="width" type="String" default="50%"/>
+    <aura:attribute name="maxWidth" type="String" default="50%"/>
+
+    <!-- Styles to align custom header and footer -->
+    <aura:html tag="style">
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }
+        .slds-modal__content{
+        overflow-y:hidden !important;
+        height:unset !important;
+        max-height:unset !important;
+        }
+        .slds-modal__container{
+        width: {! v.width } !important;
+        max-width: {! v.maxWidth } !important;
+        }
+    </aura:html>
+    <!-- Style ends -->
+
+    <!-- Modal Header -->
+    <header class="slds-modal__header">
+        <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
+            {! v.header }
+        </h2>
+    </header>
+    <!-- Modal Header ends-->
+
+    <!-- Modal body -->
+    <div class="slds-modal__content" id="modal-content-id-1">
+        <div class="slds-p-around_medium overflow_y_scroll" style="{! 'max-height : '+v.maxHeight }">
+            {! v.body }
+        </div>
+    </div>
+    <!-- Modal body ends -->
+
+    <!-- Modal Footer -->
+    <footer class="slds-modal__footer">
+        {! v.footer }
+    </footer>
+    <!-- Modal Footer ends -->
+
+</aura:component>
