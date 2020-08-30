@@ -1,0 +1,165 @@
+<!--
+ * @author Akshat Jain
+ * @email akshat.jain@mtxb2b.com
+ * @desc This components allows UI CRUD operations on card.
+-->
+<template>
+    <div class="slds-m-around_large">
+        <div class="section-heading slds-text-heading_medium">
+            <strong>{heading}</strong>
+        </div>
+        <div class="slds-m-top_small">
+
+            <div class="slds-form-element__label" style="font-size: 0.85rem;font-weight: 700;">
+                {subHeading}
+            </div>
+
+            <template for:each={records} for:item="record" for:index="ind">
+
+                // Card: View
+                // TODO: Modify/Add/Remove Field_1__c, Field__2__c according to schema
+                <template key={record.key} if:false={record.isEdit}>
+                    <div key={record.key} class="slds-m-top_medium slds-p-around_medium card-background">
+
+                        <lightning-layout horizontal-align="spread" multiple-rows>
+
+                            <!-- First Row - First Column -->
+                            <lightning-layout-item size="8" class="slds-p-vertical_xx-small">
+                                <div class="slds-text-heading_small"><strong>{record.Field_1__c}</strong></div>
+                            </lightning-layout-item>
+
+                            <!-- First Row - Second Column -->
+                            <lightning-layout-item size="4" class="slds-p-vertical_xx-small">
+                                <div class="slds-float_right">
+                                    <lightning-badge label={record.Field_2__c}
+                                        class="slds-theme_warning slds-p-horizontal_medium">
+                                    </lightning-badge>
+                                </div>
+                            </lightning-layout-item>
+
+                            <!-- Second Row - First Column -->
+                            <lightning-layout-item size="3" class="slds-p-vertical_xx-small">
+                                <div class="slds-text-title">Field 3</div>
+                                <div class="slds-m-bottom_small">
+                                    {record.Field_3__c}
+                                </div>
+                                <div class="slds-text-title">Field 4</div>
+                                <div>
+                                    {record.Field_4__c}
+                                </div>
+                            </lightning-layout-item>
+
+                            <!-- Second Row - Second Column -->
+                            <lightning-layout-item size="3" class="slds-p-vertical_xx-small">
+                                Add more<br>
+                                fields here
+                            </lightning-layout-item>
+
+                            <!-- Second Row - Third Column -->
+                            <lightning-layout-item size="3" class="slds-p-vertical_xx-small">
+                                Add more<br>
+                                fields here
+                            </lightning-layout-item>
+
+                            <!-- Second Row - Fourth Column -->
+                            <lightning-layout-item size="3" class="slds-m-top_medium">
+                                <span class="slds-float_right">
+                                    <lightning-button-icon icon-name="utility:edit" variant="bare"
+                                        alternative-text="Edit" class="slds-m-left_small" title="Edit"
+                                        data-key={record.key} onclick={handleClick} name="editCard">
+                                    </lightning-button-icon>
+
+                                    <lightning-button-icon icon-name="utility:delete" variant="bare" 
+                                        name="deleteCard" alternative-text="Delete" class="slds-m-left_small"
+                                        title="Delete" data-key={record.key} onclick={handleClick}>
+                                    </lightning-button-icon>
+                                </span>
+
+                            </lightning-layout-item>
+
+                        </lightning-layout>
+                    </div>
+                </template>
+
+                // Card: Edit
+                // TODO: Modify/Add/Remove Field_1__c, Field__2__c according to schema
+                <template key={record.key} if:true={record.isEdit}>
+                    <div key={record.key} class="slds-m-top_medium">
+                        <div class="slds-box slds-m-top_small"
+                            style="padding:0rem; box-shadow: 0 2px 2px 0 rgba(0,0,0,.1);">
+
+                            <div style="background:#e6f1ff; border:1px solid #91c6ff; margin:-1px;"
+                                class="slds-p-horizontal_small slds-p-vertical_xx-small">
+                                <lightning-layout horizontal-align="spread">
+
+                                    <lightning-layout-item size="11">
+                                        <span class="slds-text-heading_small color-brand">{cardHeader}</span>
+                                    </lightning-layout-item>
+
+                                    <lightning-layout-item size="1">
+                                        <div class="slds-float_right">
+                                            <lightning-button-icon icon-name="utility:close" size="small"
+                                                variant="bare" onclick={handleCloseEditModal}
+                                                name="closerecordModal" data-key={record.key}>
+                                            </lightning-button-icon>
+                                        </div>
+                                    </lightning-layout-item>
+
+                                </lightning-layout>
+                            </div>
+
+                            <div class="slds-m-around_small">
+                                <lightning-layout horizontal-align="spread" class="slds-grid_vertical-align-end"
+                                    multiple-rows>
+
+                                    <lightning-layout-item size="5" class="slds-p-right_small">
+                                        <lightning-input variant="label-stacked" label="Field 1" name="Field_1__c"
+                                            placeholder="" value={currentRecord.Field_1__c} onchange={handleChange}>
+                                        </lightning-input>
+                                    </lightning-layout-item>
+
+                                    <lightning-layout-item size="5">
+                                        <lightning-input variant="label-stacked" label="Field 2" name="Field_2__c"
+                                            placeholder="" value={currentRecord.Field_2__c} onchange={handleChange}>
+                                        </lightning-input>
+                                    </lightning-layout-item>
+
+                                    <lightning-layout-item size="2"></lightning-layout-item>
+                                    
+                                    <lightning-layout-item size="5" class="slds-p-right_small">
+                                        <lightning-input variant="label-stacked" label="Field 3" name="Field_3__c"
+                                            placeholder="" value={currentRecord.Field_3__c} onchange={handleChange}>
+                                        </lightning-input>
+                                    </lightning-layout-item>
+
+                                    <lightning-layout-item size="5">
+                                        <lightning-input variant="label-stacked" label="Field 4" name="Field_4__c"
+                                            placeholder="" value={currentRecord.Field_4__c} onchange={handleChange}>
+                                        </lightning-input>
+                                    </lightning-layout-item>
+                                    
+
+                                    <lightning-layout-item size="2">
+                                        <div class="slds-float_right">
+                                            <lightning-button variant="brand" name="saveCard" onclick={handleClick}
+                                                label="SAVE" data-key={record.key}>
+                                            </lightning-button>
+                                        </div>
+                                    </lightning-layout-item>
+
+                                </lightning-layout>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+            </template>
+
+        </div>
+
+        <div class="slds-m-top_small">
+            <lightning-button icon-name="utility:add" icon-position="right" onclick={handleClick} name="addCard"
+                label={addButtonLabel} variant="neutral"></lightning-button>
+        </div>
+    </div>
+</template>
