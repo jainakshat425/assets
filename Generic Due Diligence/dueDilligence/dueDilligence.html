@@ -1,0 +1,102 @@
+<template>
+    <article class="slds-card">
+        <div class="slds-align_absolute-center">
+            <div if:true={showEdit}>
+                <lightning-button variant="brand" label="Edit" onclick={handleEditClick} class="slds-m-left_x-small">
+                </lightning-button>
+            </div>
+            <div if:false={showEdit}>
+                <lightning-button label="Cancel" onclick={handleCancelClick} class="slds-m-left_x-small">
+                </lightning-button>
+                <lightning-button variant="brand" label="Save" onclick={handleSaveClick} class="slds-m-left_x-small">
+                </lightning-button>
+            </div>
+        </div>
+        <div class="slds-card__body slds-card__body_inner">
+            <div class="slds-table_edit_container slds-is-relative">
+                <!-- Due Diligence List Start Here  -->
+                <table aria-multiselectable="true"
+                    class="slds-table slds-no-cell-focus slds-table_bordered slds-table_edit slds-table_fixed-layout slds-table_resizable-cols"
+                    role="grid" style="width: 100%;">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <template for:each={columnConfiguration} for:item="column">
+                                <th key={column.fieldApiName} scope="col" style={column.style}>
+                                    <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                        <div class="slds-text-body_medium slds-p-around_xx-small column-padding" style="word-break: break-word;
+                                            white-space: initial;">
+                                            {column.heading}</div>
+                                    </div>
+                                </th>
+                            </template>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={data} for:item='item' for:index="index">
+                            <tr class="slds-hint-parent" key={item.Id}>
+                                <td role="gridcell" style="word-break:break-word;white-space: normal;">
+                                    <div>
+                                        <div if:true={item.referenceLink}>
+                                            <a onclick={handleOpenReferenceLink} data-url={item.referenceLink}
+                                                title={item.dueDiligenceName}>
+                                                {item.dueDiligenceName}
+                                            </a>
+                                            <span if:true={item.helpText} class="slds-m-around_xxx-small">
+                                                <lightning-helptext content={item.helpText}
+                                                    class="slds-m-around_xxx-small">
+                                                </lightning-helptext>
+                                            </span>
+                                        </div>
+                                        <div if:false={item.referenceLink} title={item.dueDiligenceName}>
+                                            {item.dueDiligenceName}
+                                            <span if:true={item.helpText} class="slds-m-around_xxx-small">
+                                                <lightning-helptext content={item.helpText}
+                                                    class="slds-m-around_xxx-small">
+                                                </lightning-helptext>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td role="gridcell" style="word-break:break-word;white-space: normal;">
+                                    <div class=""> {item.responsibleParty} </div>
+                                </td>
+                                <td role="gridcell" style="word-break:break-word;white-space: normal;">
+                                    <div if:true={showEdit} class=""> {item.status} </div>
+                                    <div if:false={showEdit} class="">
+                                        <lightning-combobox class="status-field" data-recid={item.Id} name="status"
+                                            dropdown-alignment="auto" value={item.status} options={statusOptions}
+                                            onchange={handleChange} data-index={index} variant="label-hidden">
+                                        </lightning-combobox>
+                                    </div>
+                                </td>
+                                <td role="gridcell" style="word-break:break-word;white-space: normal;"
+                                    if:true={showNotes}>
+                                    <div if:true={showEdit} class=""> {item.notes} </div>
+                                    <div if:false={showEdit} class="">
+                                        <lightning-textarea name="notes" value={item.notes} onchange={handleChange}
+                                            data-index={index}>
+                                        </lightning-textarea>
+                                    </div>
+                                </td>
+                                <td role="gridcell" style="word-break:break-word;white-space: normal;">
+                                    <div class="">
+                                        <lightning-formatted-date-time year="numeric" month="numeric" day="numeric"
+                                            value={item.completedDate}>
+                                        </lightning-formatted-date-time>
+                                    </div>
+                                </td>
+                                <td role="gridcell" style="word-break:break-word;white-space: normal;">
+                                    <div class="">{item.lastModifiedByName} </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+                <div if:true={isTableEmpty} class="slds-p-top_small slds-text-align_center slds-align_absolute-center">
+                    <span class="slds-m-around_small status slds-text-color_error">No Records Found!</span>
+                </div>
+                <!-- Due Diligence List End Here  -->
+            </div>
+        </div>
+    </article>
+</template>
