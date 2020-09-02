@@ -1,0 +1,200 @@
+<template>
+    <section role="dialog" tabindex="-1" aria-labelledby="main-modal-heading" aria-modal="true"
+        aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_medium">
+        <div class="slds-modal__container">
+
+            <template if:false={showDeleteConfirm}>
+                <header class="slds-modal__header">
+                    <lightning-button-icon icon-name="utility:close" alternative-text="Close" variant="bare-inverse"
+                        title="Close" onclick={closeDocumentModal} class="slds-modal__close" size="large">
+                    </lightning-button-icon>
+                    <h2 id="main-modal-heading" class="slds-modal__title slds-hyphenate">Document Uploads</h2>
+                </header>
+    
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <div class="backdrop" if:true={showSpinner}>
+                        <div class="spinner">
+                            <lightning-spinner alternative-text="Loading..."></lightning-spinner>
+                        </div>
+                    </div>
+                    <div class="slds-text-align_right slds-m-bottom_small">
+                        <lightning-button name="Add Row" label="Add Row" variant="brand" onclick={handleAddRow}>
+                        </lightning-button>
+                    </div>
+                    <div>
+                        <div class="slds-grid slds-wrap bottom_spacing_div slds-m-vertical_medium">
+                            <table
+                                class="slds-table bordered slds-table_bordered slds-table_striped slds-max-medium-table_stacked-horizontal">
+    
+                                <thead>
+                                    <tr class="table_header_brand">
+                                        <template for:each={columnConfiguration} for:item="column">
+                                            <th key={column.heading} onclick={handleSort}
+                                                data-fieldname={column.fieldApiName} scope="col" style={column.style}>
+                                                <a class="slds-th__action slds-text-link_reset" role="button" tabindex="-1">
+                                                    <div
+                                                        class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                        <div class="slds-p-right_xx-small tableHeader">{column.heading}
+                                                        </div>
+                                                        <template if:true={column.sortable}>
+                                                            <template if:false={column.sorted}>
+                                                                <lightning-icon class="sort_up" icon-name="utility:sort"
+                                                                    size="xx-small" variant="inverse"></lightning-icon>
+                                                            </template>
+                                                            <template if:true={column.sorted}>
+                                                                <template if:true={column.sortedAscending}>
+                                                                    <lightning-icon class="sort_down"
+                                                                        icon-name="utility:arrowdown" size="xx-small"
+                                                                        variant="inverse"></lightning-icon>
+                                                                </template>
+                                                                <template if:false={column.sortedAscending}>
+                                                                    <lightning-icon class="sort_down"
+                                                                        icon-name="utility:arrowup" size="xx-small"
+                                                                        variant="inverse"></lightning-icon>
+                                                                </template>
+                                                            </template>
+                                                        </template>
+                                                    </div>
+                                                </a>
+                                            </th>
+                                        </template>
+                                    </tr>
+                                </thead>
+    
+                                <tbody>
+                                    <template for:each={documents} for:item='document'>
+                                        <tr key={document.Id}>
+    
+                                            <td data-label="Action">
+                                                <lightning-button-icon icon-name="utility:clear" variant="border-filled"
+                                                    data-type="document-category" alternative-text="Delete"
+                                                    onclick={confirmDeleteFile} class="slds-m-right_small"
+                                                    title="Delete document category" data-docid={document.Id}>
+                                                </lightning-button-icon>
+                                            </td>
+    
+                                            <td data-label="Document Category" title={document.Name}>
+                                                <lightning-input variant="label-hidden" name="Name"
+                                                    value={document.Name} data-docid={document.Id} 
+                                                    class="no-label" onchange={handleInputChange} required max-length="255"
+                                                    style="visibility: visible;">
+                                                </lightning-input>
+                                            </td>
+    
+                                            <td data-label="File Uploader">
+                                                <lightning-file-upload label="Attach Documents" name="fileUploader"
+                                                    record-id={document.Id} onuploadfinished={handleUploadFinished}>
+                                                </lightning-file-upload>
+                                            </td>
+    
+                                            <td data-label="Upload Document">
+                                                <div class="overflow_y_scroll custom_scroll upload-documents">
+                                                    <template for:each={document.ContentDocumentLinks} for:item='file'>
+                                                        <div key={file.Id} class="document">
+    
+                                                            <div class="max-text-width" title={file.ContentDocument.Title}
+                                                                style="display: grid; margin-bottom: 2px;">
+                                                                <a class="doc-max-width" title={file.ContentDocument.Title}
+                                                                    href="javascript:void(0);"
+                                                                    data-fileid={file.ContentDocumentId}
+                                                                    onclick={handlePreviewFile} data-docid={document.Id}
+                                                                    target="_Self">
+                                                                    {file.ContentDocument.Title} (
+                                                                    <lightning-formatted-date-time
+                                                                        value={file.ContentDocument.CreatedDate}
+                                                                        hour="2-digit" minute="2-digit" year="numeric"
+                                                                        month="short" day="2-digit"
+                                                                        data-fileid={file.ContentDocumentId}
+                                                                        data-docid={document.Id}>
+                                                                    </lightning-formatted-date-time>
+                                                                    )
+                                                                </a>
+                                                            </div>
+    
+    
+                                                            <a href="javascript:void(0);" class="doc_icon"
+                                                                onclick={confirmDeleteFile} title="Delete Document"
+                                                                if:false={disableDelete}>
+                                                                <lightning-icon icon-name="utility:delete"
+                                                                    data-docid={document.Id}
+                                                                    data-fileid={file.ContentDocumentId} data-type="file"
+                                                                    alternative-text="Delete Document" size="xx-small"
+                                                                    class="position_relative"></lightning-icon>
+                                                            </a>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+    
+                            <div if:false={haveDocuments}
+                                class="margin-bottom slds-text-align_center slds-align_absolute-center">
+                                <span class="status slds-text-color_error margin_around_medium slds-m-top_medium">
+                                    No documents here. Click Add Row to add a new document.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer">
+                    <lightning-button class="slds-m-right_small" style="margin-right: 10px;" name="Close" label="Close"
+                        variant="neutral" onclick={closeDocumentModal}>
+                    </lightning-button>
+                    <lightning-button name="Save" label="Save" variant="brand" class="slds-m-right_small"
+                        onclick={handleSave}>
+                    </lightning-button>
+                </footer>
+            </template>
+
+            <!-- Modal for delete confirmation -->
+            <template if:true={showDeleteConfirm}>
+                <header class="slds-modal__header">
+                    <lightning-button-icon icon-name="utility:close" alternative-text="Close"
+                        variant="bare-inverse" title="Close" onclick={handleDeleteCancel}
+                        class="slds-modal__close" size="large">
+                    </lightning-button-icon>
+                    <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
+                        Delete Confirmation
+                    </h2>
+                </header>
+    
+                <div class="slds-modal__content slds-p-around_medium slds-text-align_center" id="delete-modal">
+                    <div class="backdrop" if:true={showSpinner}>
+                        <div class="spinner">
+                            <lightning-spinner alternative-text="Loading..."></lightning-spinner>
+                        </div>
+                    </div>
+                    <p>
+                        <template if:true={isFileDelete}>
+                            Are you sure you want to delete this file?
+                        </template>
+                        <template if:false={isFileDelete}>
+                            Are you sure you want to delete this document category?
+                        </template>
+                    </p>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button class="slds-p-right_xx-small" name="cancel" label="Cancel"
+                        onclick={handleDeleteCancel}>
+                    </lightning-button>
+                    <template if:true={isFileDelete}>
+                        <lightning-button name="delete" label="Delete" variant="destructive"
+                            onclick={deleteFile}>
+                        </lightning-button>
+                    </template>
+                    <template if:false={isFileDelete}>
+                        <lightning-button name="delete" label="Delete" variant="destructive"
+                            onclick={deleteDocumentCategory}>
+                        </lightning-button>
+                    </template>
+                </footer>
+            </template>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>
