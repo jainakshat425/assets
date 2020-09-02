@@ -1,0 +1,13 @@
+.slds-card__body {
+    padding-top: 0 !important;
+}
+
+.column-padding {
+    padding-left: 0.5rem !important;
+}
+
+.modal-container {
+    width: 50% !important;
+    max-width: 71rem !important;
+    min-width: 75rem !important;
+}
